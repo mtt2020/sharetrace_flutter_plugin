@@ -1,0 +1,52 @@
+group 'com.sharetrace.sharetrace_flutter_plugin'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.0'
+    }
+}
+
+def getCurrentProjectDir() {
+    String result = ""
+    rootProject.allprojects { project ->
+        if (project.properties.get("identityPath").toString() == ":sharetrace_flutter_plugin") {
+            result = project.properties.get("projectDir").toString()
+        }
+    }
+    return result
+}
+
+rootProject.allprojects {
+    // 这个闭包是循环所有project, 我们让这个仓库可以被所有module找到
+    def dir = getCurrentProjectDir()
+    repositories {
+        google()
+        jcenter()
+        maven { // 添加这个指向本地的仓库目录
+            url "$dir/aar"
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    implementation 'cn.net.shoot:sharetracesdk:2.0.8'
+}
